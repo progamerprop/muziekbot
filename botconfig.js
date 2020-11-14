@@ -1,6 +1,0 @@
-{
-   PREFIX="!" 
-}
-
-TOKEN=""
-PREFIX="!"
