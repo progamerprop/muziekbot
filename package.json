@@ -1,0 +1,17 @@
+{
+  "name": "muziek-bot",
+  "version": "1.2.0",
+  "description": "Een muziek bot die 24/7 online en actief is",
+  "main": "index.js",
+  "scripts": {
+    "test": "$ping"
+  },
+  "keywords": [
+    "Muziek"
+  ],
+  "author": "Aron Gaming",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^12.4.1"
+  }
+}
