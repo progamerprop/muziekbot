@@ -1,13 +1,18 @@
 {
-  "name": "evobot",
-  "version": "0.9.0",
+  "name": "muziekbot",
+  "version": "1.0.0",
   "description": "Discord music bot built with discord.js",
   "main": "index.js",
   "author": "Erit Islami <eritislami@gmail.com>",
   "private": true,
   "homepage": "https://github.com/eritislami/evobot",
-  "repository": "github:eritislami/evobot",
-  "bugs": "https://github.com/eritislami/evobot/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eritislami/evobot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/eritislami/evobot/issues"
+  },
   "engines": {
     "node": ">=12.0.0"
   },
@@ -24,5 +29,10 @@
   },
   "scripts": {
     "start": "node index.js"
-  }
+  },
+  "devDependencies": {},
+  "keywords": [
+    "muziek\\"
+  ],
+  "license": "ISC"
 }
