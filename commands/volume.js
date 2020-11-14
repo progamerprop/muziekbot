@@ -1,26 +1,24 @@
-const { MessageEmbed } = require("discord.js");
-const sendError = require("../util/error");
+const { canModifyQueue } = require("../util/EvobotUtil");
 
 module.exports = {
-  info: {
-    name: "volume",
-    description: "To change the server song queue volume",
-    usage: "[volume]",
-    aliases: ["v", "vol"],
-  },
+  name: "volume",
+  aliases: ["v"],
+  description: "Change volume of currently playing music",
+  execute(message, args) {
+    const queue = message.client.queue.get(message.guild.id);
 
-  run: async function (client, message, args) {
-    const channel = message.member.voice.channel;
-    if (!channel)return sendError("I'm sorry but you need to be in a voice channel to play music!", message.channel);
-    const serverQueue = message.client.queue.get(message.guild.id);
-    if (!serverQueue) return sendError("There is nothing playing in this server.", message.channel);
-    if (!args[0])return message.channel.send(`The current volume is: **${serverQueue.volume}**`);
-    serverQueue.volume = args[0]; 
-    serverQueue.connection.dispatcher.setVolumeLogarithmic(args[0] / 5);
-    let xd = new MessageEmbed()
-    .setDescription(`I set the volume to: **${args[0]/5}/5**(it will be divied by 5)`)
-    .setAuthor("Server Volume Manager", "https://raw.githubusercontent.com/SudhanPlayz/Discord-MusicBot/master/assets/Music.gif")
-    .setColor("BLUE")
-    return message.channel.send(xd);
-  },
+    if (!queue) return message.reply("There is nothing playing.").catch(console.error);
+    if (!canModifyQueue(message.member))
+      return message.reply("You need to join a voice channel first!").catch(console.error);
+
+    if (!args[0]) return message.reply(`🔊 The current volume is: **${queue.volume}%**`).catch(console.error);
+    if (isNaN(args[0])) return message.reply("Please use a number to set volume.").catch(console.error);
+    if (parseInt(args[0]) > 100 || parseInt(args[0]) < 0)
+      return message.reply("Please use a number between 0 - 100.").catch(console.error);
+
+    queue.volume = args[0];
+    queue.connection.dispatcher.setVolumeLogarithmic(args[0] / 100);
+
+    return queue.textChannel.send(`Volume set to: **${args[0]}%**`).catch(console.error);
+  }
 };

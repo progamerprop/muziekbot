@@ -1,25 +1,17 @@
-const { MessageEmbed } = require("discord.js");
-const sendError = require("../util/error");
+const { canModifyQueue } = require("../util/EvobotUtil");
 
 module.exports = {
-  info: {
-    name: "pause",
-    description: "To pause the current music in the server",
-    usage: "",
-    aliases: [""],
-  },
+  name: "pause",
+  description: "Pause the currently playing music",
+  execute(message) {
+    const queue = message.client.queue.get(message.guild.id);
+    if (!queue) return message.reply("There is nothing playing.").catch(console.error);
+    if (!canModifyQueue(message.member)) return;
 
-  run: async function (client, message, args) {
-    const serverQueue = message.client.queue.get(message.guild.id);
-    if (serverQueue && serverQueue.playing) {
-      serverQueue.playing = false;
-      serverQueue.connection.dispatcher.pause();
-      let xd = new MessageEmbed()
-      .setDescription("⏸ Paused the music for you!")
-      .setColor("YELLOW")
-      .setAuthor("Music has been paused!", "https://raw.githubusercontent.com/SudhanPlayz/Discord-MusicBot/master/assets/Music.gif")
-      return message.channel.send(xd);
+    if (queue.playing) {
+      queue.playing = false;
+      queue.connection.dispatcher.pause(true);
+      return queue.textChannel.send(`${message.author} ⏸ paused the music.`).catch(console.error);
     }
-    return sendError("There is nothing playing in this server.", message.channel);
-  },
+  }
 };

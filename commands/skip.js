@@ -1,19 +1,17 @@
-const sendError = require("../util/error");
+const { canModifyQueue } = require("../util/EvobotUtil");
 
 module.exports = {
-  info: {
-    name: "skip",
-    description: "To skip the current music",
-    usage: "",
-    aliases: ["s"],
-  },
+  name: "skip",
+  aliases: ["s"],
+  description: "Skip the currently playing song",
+  execute(message) {
+    const queue = message.client.queue.get(message.guild.id);
+    if (!queue)
+      return message.reply("There is nothing playing that I could skip for you.").catch(console.error);
+    if (!canModifyQueue(message.member)) return;
 
-  run: async function (client, message, args) {
-    const channel = message.member.voice.channel
-    if (!channel)return sendError("I'm sorry but you need to be in a voice channel to play music!", message.channel);
-    const serverQueue = message.client.queue.get(message.guild.id);
-    if (!serverQueue)return sendError("There is nothing playing that I could skip for you.", message.channel);
-    serverQueue.connection.dispatcher.end("Skiped the music");
-    message.react("✅")
-  },
+    queue.playing = true;
+    queue.connection.dispatcher.end();
+    queue.textChannel.send(`${message.author} ⏭ skipped the song`).catch(console.error);
+  }
 };

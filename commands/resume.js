@@ -1,25 +1,20 @@
-const { MessageEmbed } = require("discord.js");
-const sendError = require("../util/error");
+const { canModifyQueue } = require("../util/EvobotUtil");
 
 module.exports = {
-  info: {
-    name: "resume",
-    description: "To resume the paused music",
-    usage: "",
-    aliases: [],
-  },
+  name: "resume",
+  aliases: ["r"],
+  description: "Resume currently playing music",
+  execute(message) {
+    const queue = message.client.queue.get(message.guild.id);
+    if (!queue) return message.reply("There is nothing playing.").catch(console.error);
+    if (!canModifyQueue(message.member)) return;
 
-  run: async function (client, message, args) {
-    const serverQueue = message.client.queue.get(message.guild.id);
-    if (serverQueue && !serverQueue.playing) {
-      serverQueue.playing = true;
-      serverQueue.connection.dispatcher.resume();
-      let xd = new MessageEmbed()
-      .setDescription("▶ Resumed the music for you!")
-      .setColor("YELLOW")
-      .setAuthor("Music has been Resumed!", "https://raw.githubusercontent.com/SudhanPlayz/Discord-MusicBot/master/assets/Music.gif")
-      return message.channel.send(xd);
+    if (!queue.playing) {
+      queue.playing = true;
+      queue.connection.dispatcher.resume();
+      return queue.textChannel.send(`${message.author} ▶ resumed the music!`).catch(console.error);
     }
-    return sendError("There is nothing playing in this server.", message.channel);
-  },
+
+    return message.reply("The queue is not paused.").catch(console.error);
+  }
 };
